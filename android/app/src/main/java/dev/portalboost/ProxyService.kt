@@ -153,7 +153,7 @@ class ProxyService : Service() {
                     reservation = r
                     val (ssid, pass) = credentials(r)
                     LogBus.update { it.copy(hotspotSsid = ssid, hotspotPass = pass) }
-                    log("hotspot up: SSID '$ssid' password '$pass'")
+                    log("hotspot up: SSID '$ssid' (password shown in the app)")
                     goForeground("Hotspot $ssid — waiting for Portal")
                     main.postDelayed({ announceHotspotIp(upstream) }, 1500)
                     main.postDelayed({ checkUpstream(upstream) }, 3000)
@@ -261,7 +261,7 @@ class ProxyService : Service() {
                 return@requestGroupInfo
             }
             LogBus.update { it.copy(hotspotSsid = g.networkName, hotspotPass = g.passphrase, groupFreq = g.frequency) }
-            log("fixed Wi-Fi up: SSID '${g.networkName}' password '${g.passphrase}' on ${describeFreq(g.frequency)}")
+            log("fixed Wi-Fi up: SSID '${g.networkName}' on ${describeFreq(g.frequency)}")
             val band = { f: Int -> if (f < 3000) 2 else if (f < 5900) 5 else 6 }
             if (g.frequency == staFreq) {
                 log("latency: Portal network and home Wi-Fi share one channel (no hopping; both hops take turns on one radio)")

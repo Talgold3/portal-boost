@@ -69,4 +69,4 @@ The Advanced tab shows:
 - **Ping per hop:** phone ↔ Portal, phone ↔ router, phone ↔ PS5, every 0.2 s.
 - **Video loss:** gaps in the 16-bit packet index of the plaintext Takion AV header on the PS5 → phone leg. Loss on the Portal leg can't be seen from the phone.
 - **Channel checks:** a DFS warning and a home/Portal channel mismatch warning.
-- **Full log:** with Copy log for bug reports. The log includes the Wi-Fi password; remove it before posting.
+- **Full log:** with Copy log for bug reports. The Wi-Fi password is never written to the log.

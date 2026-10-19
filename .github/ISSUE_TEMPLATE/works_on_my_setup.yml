@@ -1,0 +1,47 @@
+name: Works on my setup
+description: Report a phone and router combination you tested, good or bad.
+title: "[Setup] "
+labels: [compatibility]
+body:
+  - type: input
+    id: phone
+    attributes:
+      label: Phone model and Android version
+    validations:
+      required: true
+  - type: input
+    id: router
+    attributes:
+      label: Router model, 5 GHz channel and width
+    validations:
+      required: true
+  - type: input
+    id: profile
+    attributes:
+      label: Profile used
+      placeholder: "65"
+    validations:
+      required: true
+  - type: input
+    id: bitrate
+    attributes:
+      label: Bitrate shown in the app (Mbps)
+  - type: input
+    id: latency
+    attributes:
+      label: Latency shown on the Portal (ms), with and without Portal Boost
+      placeholder: 9 ms with, 4 ms without
+  - type: dropdown
+    id: verdict
+    attributes:
+      label: How does it play?
+      options:
+        - Great, no issues
+        - Playable, some stutter or lag
+        - Unplayable
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else

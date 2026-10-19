@@ -1,0 +1,51 @@
+name: Bug report
+description: Something doesn't work, or the boost isn't applied.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing Portal Boost. The details below make it much easier to find the cause.
+  - type: input
+    id: phone
+    attributes:
+      label: Phone model and Android version
+      placeholder: Galaxy S25, Android 16
+    validations:
+      required: true
+  - type: input
+    id: router
+    attributes:
+      label: Router model, 5 GHz channel and width
+      placeholder: TP-Link AX55, channel 36, 40 MHz
+    validations:
+      required: true
+  - type: dropdown
+    id: ps5
+    attributes:
+      label: PS5 connection
+      options:
+        - Wired
+        - Wi-Fi
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Portal Boost version and profile
+      placeholder: 1.0, profile 65
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what you saw. Include the latency the Portal shows if you can.
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: Advanced → Copy log, then paste here.
+      render: text

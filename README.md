@@ -99,9 +99,9 @@ Open an [issue](../../issues) and include:
 - Phone model and Android version
 - Router model, 5 GHz channel and width
 - The profile you used, and what the Portal showed for latency
-- The log from Advanced → Copy log
+- The log from Advanced → Copy log (it doesn't include your Wi-Fi password)
 
-**Before you paste the log, remove the Wi-Fi password line.**
+Tested it and it works? Please file a **Works on my setup** issue too, so others know which phones and routers are good.
 
 ## Desktop version
 
