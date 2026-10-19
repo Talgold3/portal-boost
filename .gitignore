@@ -1,0 +1,23 @@
+# Private notes, research dumps, old builds (never publish)
+_private/
+
+# Build output
+*.apk
+*.aab
+build/
+.gradle/
+android/local.properties
+__pycache__/
+*.pyc
+
+# Signing keys
+*.jks
+*.keystore
+keystore.properties
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

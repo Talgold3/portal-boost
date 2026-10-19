@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- triangle -->
+    <path android:pathData="M54,29l7,12h-14z" android:strokeColor="#FF3ECFB2" android:strokeWidth="3.2" android:strokeLineCap="round" android:strokeLineJoin="round"/>
+    <!-- circle -->
+    <path android:pathData="M66.5,54a6.5,6.5 0,1 0,13 0a6.5,6.5 0,1 0,-13 0z" android:strokeColor="#FFFF5A5F" android:strokeWidth="3.2"/>
+    <!-- cross -->
+    <path android:pathData="M48.5,67.5l11,11M59.5,67.5l-11,11" android:strokeColor="#FF7CA7FF" android:strokeWidth="3.2" android:strokeLineCap="round"/>
+    <!-- square -->
+    <path android:pathData="M30,48h10a1,1 0,0 1,1 1v10a1,1 0,0 1,-1 1h-10a1,1 0,0 1,-1 -1v-10a1,1 0,0 1,1 -1z" android:strokeColor="#FFF58BCB" android:strokeWidth="3.2" android:strokeLineJoin="round"/>
+</vector>

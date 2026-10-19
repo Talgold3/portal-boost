@@ -1,0 +1,628 @@
+<title>Portal Boost UI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&family=JetBrains+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: a dark "stage" with a chooser rail; the phone (Galaxy S25, 360×780 CSS px) is the hero. Single dark look by choice. */
+:root {
+  color-scheme: dark;
+  --stage: #0A0B0F;
+  --panel: #16171C;
+  --line: #2A2B33;
+  --fg: #F2F2F5;
+  --muted: #A1A1AA;
+  --ps-blue: #0070D1;
+  --ps-blue-text: #4DA3FF;
+  --font-ui: 'Geist', -apple-system, 'Segoe UI', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { background: var(--stage); color: var(--fg); }
+body {
+  font-family: var(--font-ui); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+}
+.wrap { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+.top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.top img { height: 36px; width: auto; }
+.top h1 { font-size: 24px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-wrap: balance; }
+.top p { margin: 0; color: var(--muted); font-size: 14px; }
+.top .titles { flex: 1 1 260px; min-width: 0; }
+.pseg { display: inline-flex; padding: 3px; border-radius: 10px; background: var(--panel); gap: 2px; }
+.pseg button { border: 0; background: transparent; color: var(--muted); font: 600 13px var(--font-ui); padding: 0 14px; height: 34px; border-radius: 8px; cursor: pointer; }
+.pseg button[aria-pressed="true"] { background: #3A3B44; color: var(--fg); }
+.pseg button:disabled { opacity: 0.4; cursor: default; }
+
+.layout { display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; }
+.rail { flex: 1 1 300px; min-width: 0; max-width: 400px; display: flex; flex-direction: column; gap: 12px; }
+.stagearea { flex: 999 1 400px; min-width: 0; display: flex; justify-content: center; }
+.choice { display: flex; gap: 14px; align-items: flex-start; text-align: left; width: 100%; padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--panel); color: var(--fg); cursor: pointer; font: inherit; }
+.choice[aria-pressed="true"] { border-color: var(--ps-blue); }
+.choice:disabled { opacity: 0.55; cursor: default; }
+.choice b { display: block; font-size: 15px; font-weight: 600; }
+.choice .tag { font-size: 11px; font-weight: 600; color: var(--ps-blue-text); margin-left: 6px; }
+.choice span.d { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+.rail h2 { font: 600 13px var(--font-ui); color: var(--muted); margin: 14px 0 0; }
+.scen { background: var(--panel); border-radius: 14px; padding: 4px 16px; }
+.scen label, .scen .srow { display: flex; align-items: center; gap: 12px; min-height: 52px; cursor: pointer; }
+.scen .srow + .srow, .scen label + .srow, .scen .srow + label { border-top: 1px solid var(--line); }
+.scen label span, .scen .srow > span { flex: 1; }
+.scen input { width: 20px; height: 20px; accent-color: var(--ps-blue); }
+.linkbtn { border: 0; background: transparent; color: var(--ps-blue-text); font: 600 14px var(--font-ui); cursor: pointer; padding: 0; min-height: 44px; }
+.hint { color: var(--muted); font-size: 13px; margin: 4px 0 0; }
+
+.compare { display: flex; gap: 40px; overflow-x: auto; padding-bottom: 12px; width: 100%; }
+.compare figure { margin: 0; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.compare figcaption { font-size: 14px; font-weight: 600; color: var(--muted); }
+.fit { width: 380px; max-width: 100%; }
+.device { width: 380px; height: 800px; padding: 10px; border-radius: 50px; background: #1B1C21; box-shadow: 0 0 0 1.5px #33353D, 0 30px 80px rgba(0,0,0,0.55); position: relative; transform-origin: top left; flex-shrink: 0; }
+.device::after { content: ""; position: absolute; top: 20px; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: #050507; z-index: 5; }
+.slot { width: 360px; height: 780px; border-radius: 40px; overflow: hidden; }
+:focus-visible { outline: 3px solid #7AB8FF; outline-offset: 2px; }
+
+/* ================= Refined (iOS-style) ================= */
+.opt-r {
+  --bg: #000000; --grouped: #1C1C1E; --sep: rgba(84,84,88,0.6); --label: #FFFFFF; --label2: rgba(235,235,245,0.62); --label3: rgba(235,235,245,0.32);
+  --tint: #2E8EFF; --fill: rgba(118,118,128,0.24); --thumb: #636366; --green: #30D158; --orange: #FF9F0A; --bar: rgba(18,18,20,0.78); --log: #0B0B0D;
+  width: 360px; height: 780px; position: relative; overflow: hidden; background: var(--bg); color: var(--label);
+  font-family: 'Geist', -apple-system, 'Segoe UI', system-ui, sans-serif; font-size: 15px; line-height: 1.35; -webkit-font-smoothing: antialiased;
+}
+.opt-r.light {
+  --bg: #F2F2F7; --grouped: #FFFFFF; --sep: rgba(60,60,67,0.22); --label: #000000; --label2: rgba(60,60,67,0.78); --label3: rgba(60,60,67,0.4);
+  --tint: #0070D1; --fill: rgba(118,118,128,0.12); --thumb: #FFFFFF; --green: #248A3D; --orange: #C75300; --bar: rgba(249,249,251,0.82); --log: #F2F2F7;
+}
+:where(.opt-r) button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; padding: 0; margin: 0; }
+:where(.opt-r) button:disabled { cursor: default; }
+.r-main { position: absolute; inset: 0; overflow-y: auto; padding: 18px 16px 104px; scrollbar-width: none; }
+.r-main::-webkit-scrollbar { width: 0; }
+.r-title { display: flex; align-items: center; gap: 10px; padding: 28px 4px 6px; }
+.r-title img { height: 22px; width: auto; }
+.r-title h1 { margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.8px; }
+
+/* power ring */
+.r-hero { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 18px 0 22px; }
+.r-ring { width: 228px; height: 228px; border-radius: 50%; position: relative; display: grid; place-items: center; }
+.r-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.r-ring .trk { fill: none; stroke: var(--fill); stroke-width: 9; }
+.r-ring .arc { fill: none; stroke: var(--tint); stroke-width: 9; stroke-linecap: round; transition: stroke-dasharray .7s cubic-bezier(.2,.8,.2,1); }
+.r-ring.spin svg { animation: rspin 1.1s linear infinite; }
+@keyframes rspin { to { transform: rotate(270deg); } }
+.r-disc { width: 190px; height: 190px; border-radius: 50%; background: var(--grouped); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; transition: transform .15s; }
+.r-ring:active .r-disc { transform: scale(0.97); }
+.r-disc svg { position: static; transform: none; width: 40px; height: 40px; }
+.r-big { font-size: 60px; font-weight: 600; letter-spacing: -2.5px; line-height: 1; font-variant-numeric: tabular-nums; }
+.r-unit { font-size: 15px; font-weight: 500; color: var(--label2); }
+.r-cta { font-size: 17px; font-weight: 600; margin-top: 6px; }
+.r-status { margin: 0; font-size: 15px; color: var(--label2); text-align: center; min-height: 20px; font-variant-numeric: tabular-nums; }
+.r-status.warn { color: var(--orange); }
+
+/* segmented control */
+.r-seg { position: relative; display: flex; height: 40px; padding: 2px; border-radius: 10px; background: var(--fill); }
+.r-thumb { position: absolute; top: 2px; bottom: 2px; left: 2px; width: calc((100% - 4px) / 4); border-radius: 8px; background: var(--thumb); box-shadow: 0 3px 8px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.2); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+.r-seg button { flex: 1; position: relative; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.r-seg button[aria-checked="false"] { color: var(--label2); }
+.r-seg.locked { opacity: 0.45; }
+
+/* grouped lists */
+.r-sec { margin-top: 30px; }
+.r-sec:first-of-type { margin-top: 0; }
+.r-head { margin: 0 0 7px 16px; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.2px; color: var(--label2); }
+.r-foot { margin: 8px 16px 0; font-size: 13px; color: var(--label2); line-height: 1.4; }
+.r-foot.lock { display: flex; gap: 6px; align-items: flex-start; }
+.r-foot.lock svg { flex-shrink: 0; margin-top: 2px; }
+.r-group { background: var(--grouped); border-radius: 12px; overflow: hidden; }
+.r-row { display: flex; align-items: center; gap: 12px; min-height: 52px; padding-left: 16px; width: 100%; text-align: left; }
+.r-row + .r-row .r-body { border-top: 0.5px solid var(--sep); }
+.r-body { flex: 1; min-width: 0; align-self: stretch; display: flex; align-items: center; gap: 8px; padding: 9px 16px 9px 0; }
+.r-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.r-l { font-size: 16px; }
+.r-d { font-size: 13px; color: var(--label2); }
+.r-v { font-size: 16px; color: var(--label2); font-variant-numeric: tabular-nums; }
+.r-mono { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 14px; }
+.r-tile { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; flex-shrink: 0; color: #FFFFFF; }
+.r-trail { display: flex; align-items: center; justify-content: flex-end; min-width: 22px; color: var(--label3); flex-shrink: 0; }
+.r-fill { flex: 1; min-width: 0; align-self: stretch; display: flex; align-items: center; text-align: left; }
+.r-trail.tint { color: var(--tint); }
+.r-ok { color: var(--green); font-size: 14px; font-weight: 500; }
+.r-spin { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--fill); border-top-color: var(--label2); animation: rspin2 .8s linear infinite; }
+@keyframes rspin2 { to { transform: rotate(360deg); } }
+.r-btn:active { background: var(--fill); }
+.r-btn:disabled .r-l { color: var(--label3); }
+.r-eye { width: 40px; height: 40px; margin: -4px 0; display: grid; place-items: center; flex-shrink: 0; color: var(--label2) !important; }
+.r-check { color: var(--tint); }
+.r-action { color: var(--tint) !important; font-size: 16px; }
+.r-log { padding: 12px 16px; font: 500 11.5px/1.7 'Geist Mono', ui-monospace, monospace; color: var(--label2); background: var(--log); overflow-x: auto; }
+.r-log .good { color: var(--green); } .r-log .bad { color: var(--orange); }
+.r-ver { text-align: center; font-size: 13px; color: var(--label3); margin-top: 24px; }
+
+/* onboarding */
+.r-onb { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 8px; }
+.r-dots { display: flex; gap: 7px; margin-bottom: 26px; }
+.r-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--fill); }
+.r-dots span.on { background: var(--label); }
+.r-bigtile { width: 68px; height: 68px; border-radius: 17px; display: grid; place-items: center; color: #FFFFFF; margin-bottom: 18px; }
+.r-onb h2 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.6px; line-height: 1.15; text-wrap: balance; }
+.r-onb p.lead { margin: 10px 8px 22px; font-size: 16px; color: var(--label2); line-height: 1.45; }
+.r-onb .r-sec, .r-onb .r-group { width: 100%; text-align: left; }
+.r-onb .r-sec { margin-top: 0; }
+.r-primary { width: 100%; height: 50px; border-radius: 14px; background: var(--tint) !important; color: #FFFFFF !important; font-size: 17px !important; font-weight: 600 !important; margin-top: 26px; }
+.r-secondary { height: 44px; color: var(--tint) !important; font-size: 16px !important; margin-top: 4px; }
+.r-secondary:disabled { visibility: hidden; }
+
+/* tab bar */
+.r-tabbar { position: absolute; left: 0; right: 0; bottom: 0; height: 74px; padding-bottom: 12px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--bar); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-top: 0.5px solid var(--sep); }
+.r-tabbar button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 10.5px; font-weight: 500; color: var(--label3); }
+.opt-r.light .r-tabbar button { color: rgba(60,60,67,0.6); }
+.r-tabbar button[aria-current="page"] { color: var(--tint) !important; }
+
+/* ================= Original A (kept for comparison) ================= */
+.screen { width: 360px; height: 780px; display: flex; flex-direction: column; position: relative; overflow: hidden; background: var(--s-bg); color: var(--s-fg); font-family: var(--s-font); font-size: 14px; line-height: 1.45; }
+.screen button { font-family: inherit; color: inherit; cursor: pointer; }
+.screen button:disabled { cursor: not-allowed; }
+.opt-a { --s-bg: #080C17; --s-card: #121A2C; --s-line: #1E2840; --s-fg: #EEF2F8; --s-muted: #A3AEC4; --s-accent: #0070D1; --s-on-accent: #FFFFFF; --s-link: #5AAEFF; --s-ok: #2BD4A4; --s-wait: #4A5878; --s-warn: #FFC233; --s-warn-bg: #2A2410; --s-warn-fg: #FFE3A3; --s-log: #050810; --s-logfg: #B5C0D6; --s-font: 'Manrope', 'Segoe UI', sans-serif; --s-radius: 18px; }
+.hdr { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 0 20px; }
+.hdr img { height: 26px; width: auto; }
+.hdr .name { font-size: 18px; font-weight: 800; flex: 1; letter-spacing: -0.2px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; background: var(--s-card); font-size: 12px; font-weight: 700; color: var(--s-muted); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--s-wait); flex-shrink: 0; }
+.dot.ok { background: var(--s-ok); } .dot.on { background: var(--s-link); } .dot.warn { background: var(--s-warn); }
+.main { flex: 1; overflow-y: auto; padding: 4px 20px 24px; display: flex; flex-direction: column; gap: 14px; scrollbar-width: none; }
+.main::-webkit-scrollbar { width: 0; }
+.card { background: var(--s-card); border-radius: var(--s-radius); padding: 16px; }
+.eyebrow { margin: 0 0 8px; font-size: 11px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; color: var(--s-muted); }
+.muted { color: var(--s-muted); }
+.mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; }
+.num { font-variant-numeric: tabular-nums; }
+.health .hrow { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+.health .hrow + .hrow { border-top: 1px solid var(--s-line); }
+.health .hdot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: var(--s-wait); }
+.health .hdot.ok { background: var(--s-ok); box-shadow: 0 0 0 4px rgba(43,212,164,0.2); }
+.health .hdot.warn { background: var(--s-warn); box-shadow: 0 0 0 4px rgba(255,194,51,0.22); }
+.health b { display: block; font-size: 14px; }
+.health .warn-t { color: var(--s-warn); }
+.health small { display: block; font-size: 12px; color: var(--s-muted); }
+.seg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 4px; border-radius: 14px; background: var(--s-bg); }
+.seg button { height: 44px; border: 0; border-radius: 10px; background: transparent; font-size: 16px; font-weight: 800; color: var(--s-muted); }
+.seg button[aria-checked="true"] { background: var(--s-accent); color: var(--s-on-accent); }
+.seg button:disabled:not([aria-checked="true"]) { opacity: 0.4; }
+.pnote { margin: 10px 0 0; font-size: 13px; }
+.lock { display: flex; gap: 8px; margin-top: 10px; font-size: 12px; color: var(--s-warn); }
+.lock svg { flex-shrink: 0; margin-top: 1px; }
+.cred { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 6px 0; border: 0; background: transparent; text-align: left; }
+.cred > span { flex: 1; min-width: 0; }
+.cred .k { display: block; font-size: 12px; color: var(--s-muted); }
+.cred svg { color: var(--s-link); flex-shrink: 0; }
+.credline { display: flex; align-items: center; gap: 4px; border-top: 1px solid var(--s-line); border-bottom: 1px solid var(--s-line); }
+.iconbtn { width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 12px; background: transparent; display: grid; place-items: center; color: var(--s-muted) !important; }
+.tabbar { height: 68px; flex-shrink: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--s-line); background: var(--s-card); }
+.tabbar button { border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--s-muted); }
+.tabbar button[aria-current="page"] { color: var(--s-link); }
+.toast { position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%); padding: 10px 18px; border-radius: 999px; background: var(--s-fg); color: var(--s-bg); font-size: 14px; font-weight: 700; white-space: nowrap; z-index: 4; }
+.steps { display: flex; gap: 6px; }
+.steps span { flex: 1; height: 4px; border-radius: 2px; background: var(--s-line); }
+.steps span.on { background: var(--s-accent); }
+.stepno { font-size: 12px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; color: var(--s-link); }
+.sh1 { margin: 0; font-size: 25px; font-weight: 800; line-height: 1.2; letter-spacing: -0.3px; text-wrap: balance; }
+.sbody { margin: 0; font-size: 15px; line-height: 1.55; color: var(--s-muted); }
+.warnbox { background: var(--s-warn-bg); color: var(--s-warn-fg); border-radius: var(--s-radius); padding: 14px 16px; font-size: 14px; }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.pair .card .v { font-size: 22px; font-weight: 800; margin-top: 2px; }
+.kv { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; min-height: 46px; border: 0; background: transparent; padding: 0; text-align: left; }
+.kv + .kv { border-top: 1px solid var(--s-line); }
+.kv .k { color: var(--s-muted); font-size: 13px; }
+.navrow { display: flex; gap: 10px; margin-top: 6px; }
+.btn { height: 52px; border-radius: 26px; font-size: 16px; font-weight: 800; border: 0; }
+.btn.primary { flex: 2; background: var(--s-accent); color: var(--s-on-accent) !important; }
+.btn.ghost { flex: 1; background: transparent; border: 2px solid var(--s-line); }
+.btn.ghost:disabled { opacity: 0.4; }
+.small-btn { height: 36px; padding: 0 14px; border-radius: 18px; border: 0; background: var(--s-line); font-size: 13px; font-weight: 700; }
+.log { margin-top: 12px; background: var(--s-log); color: var(--s-logfg); border-radius: 12px; padding: 12px; font: 500 11px/1.7 'JetBrains Mono', ui-monospace, monospace; overflow-x: auto; }
+.log .good { color: #2BD4A4; } .log .bad { color: #FFD166; }
+.xprof { display: flex; flex-direction: column; gap: 6px; }
+.xprof button { display: flex; justify-content: space-between; align-items: center; min-height: 48px; padding: 0 14px; border-radius: 12px; border: 2px solid var(--s-line); background: transparent; font-size: 15px; font-weight: 700; }
+.xprof button[aria-pressed="true"] { border-color: var(--s-link); }
+.xprof button:disabled { opacity: 0.5; }
+.xprof small { font-size: 12px; color: var(--s-muted); font-weight: 600; }
+.a-hero { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 10px 0 2px; }
+.a-power { width: 196px; height: 196px; border-radius: 50%; border: 3px solid #24304A; background: #121A2C; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 0 0 10px rgba(18,26,44,0.6); }
+.a-power.is-on { border-color: #0070D1; background: #0E2A52; }
+.a-power.is-live { border-color: #5AAEFF; background: #0070D1; box-shadow: 0 0 0 12px rgba(0,112,209,0.22); }
+.a-power .big { font-size: 54px; font-weight: 800; line-height: 1; letter-spacing: -1px; }
+.a-power .sub { font-size: 13px; font-weight: 600; color: #D6E8FF; }
+.a-power .lbl { font-size: 20px; font-weight: 800; }
+.a-status { margin: 0; font-size: 14px; font-weight: 600; color: var(--s-muted); text-align: center; min-height: 20px; }
+.a-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.a-tiles .v { font-size: 26px; font-weight: 800; margin-top: 2px; }
+.a-tiles .v span { font-size: 13px; font-weight: 600; color: var(--s-muted); }
+.a-tiles small { font-size: 11px; color: #8C98B0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .r-ring.spin svg, .r-spin { animation: none; }
+  .r-ring .arc, .r-thumb, .r-disc { transition: none; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <img src="logo.svg" alt="">
+    <div class="titles">
+      <h1>Portal Boost</h1>
+      <p>Option A, refined. Galaxy S25 size. Tap the ring to simulate a session.</p>
+    </div>
+    <div class="pseg" role="group" aria-label="View">
+      <button data-view="one" aria-pressed="true">One at a time</button>
+      <button data-view="all" aria-pressed="false">Side by side</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="rail">
+      <h2>Version</h2>
+      <div id="choices" style="display:flex;flex-direction:column;gap:8px">
+        <button class="choice" data-opt="r" aria-pressed="true"><span><b>A · Refined<span class="tag">New</span></b><span class="d">Clean, iOS-style grouped lists. A slim progress ring for on/off, with quality directly under it. Light and dark.</span></span></button>
+        <button class="choice" data-opt="a" aria-pressed="false"><span><b>A · Original</b><span class="d">The first version, for comparison.</span></span></button>
+      </div>
+
+      <h2>Appearance</h2>
+      <div class="pseg" role="group" aria-label="Phone appearance" id="themeseg" style="align-self:flex-start">
+        <button data-theme-set="dark" aria-pressed="true">Dark</button>
+        <button data-theme-set="light" aria-pressed="false">Light</button>
+      </div>
+
+      <h2>Try a scenario</h2>
+      <div class="scen">
+        <label for="dfs"><span>Router left on Auto (DFS channel 64)</span><input type="checkbox" id="dfs"></label>
+        <div class="srow"><span>First launch</span><button class="linkbtn" id="firstrun">Show setup guide</button></div>
+        <div class="srow"><span>Reset phones</span><button class="linkbtn" id="reset">Reset</button></div>
+      </div>
+      <p class="hint">Quality is locked while boosting, because the Portal resumes its old session on a quick reconnect. Values in [brackets] are placeholders the app fills in.</p>
+    </aside>
+
+    <section class="stagearea" id="stage" aria-label="Phone preview"></section>
+  </div>
+</div>
+
+<script>
+const sv = (w, body, extra = '') => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ${extra}>${body}</svg>`;
+const ICON = {
+  power: sv(46, '<path d="M12 3v8"/><path d="M6.3 6.3a8 8 0 1 0 11.4 0"/>', 'style="color:#5AAEFF"'),
+  copy: sv(18, '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>'),
+  eye: sv(20, '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),
+  eyeOff: sv(20, '<path d="M3 3l18 18"/><path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3 3.9M6.6 6.6C3.7 8.5 2 12 2 12s3.5 7 10 7a9.8 9.8 0 0 0 4.4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>'),
+  lock: sv(14, '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'),
+  home: sv(22, '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'),
+  list: sv(22, '<path d="M10 6h10M10 12h10M10 18h10"/><path d="M3 6l1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17"/>'),
+  sliders: sv(22, '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>'),
+  wifi: (w = 18) => sv(w, '<path d="M2 8.8a15 15 0 0 1 20 0M5.2 12.3a10.5 10.5 0 0 1 13.6 0M8.6 15.8a5.5 5.5 0 0 1 6.8 0"/><path d="M12 19.5h.01" stroke-width="3"/>'),
+  pad: (w = 18) => sv(w, '<path d="M6.5 8h11A4.5 4.5 0 0 1 22 12.5v2a3 3 0 0 1-5.4 1.8L15 14.5H9l-1.6 1.8A3 3 0 0 1 2 14.5v-2A4.5 4.5 0 0 1 6.5 8z"/><path d="M7 10.5v3M5.5 12h3"/>'),
+  handheld: (w = 18) => sv(w, '<rect x="2" y="7" width="20" height="10" rx="5"/><rect x="8" y="9.5" width="8" height="5" rx="1"/>'),
+  bolt: (w = 18) => sv(w, '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),
+  dial: (w = 18) => sv(w, '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>'),
+  checkmark: sv(20, '<path d="M5 12.5l4.5 4.5L19 7.5"/>', 'stroke-width="2.4"'),
+  ok: '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.3l3 3 6-6.3" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  warn: '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.6a2 2 0 0 1 3.4 0l8.3 14.4A2 2 0 0 1 20.3 21H3.7A2 2 0 0 1 2 18L10.3 3.6z" fill="currentColor"/><path d="M12 9v4.5M12 17v.3" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  powerThin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 3.5v7.5"/><path d="M6.6 6.6a7.6 7.6 0 1 0 10.8 0"/></svg>',
+};
+
+const NOTES = { 35: 'Lighter boost for a crowded Wi-Fi.', 45: 'Most stable on a busy Wi-Fi.', 55: 'Sharper picture with headroom to spare.', 65: 'Sharpest picture that stayed smooth in testing.', 100: 'Highest quality. Needs a clean 5 GHz channel.', 200: 'Experimental. Expect stutter on most Wi-Fi.', 0: 'Relays at stock quality, no boost.' };
+const SSID = 'DIRECT-PB-PortalBoost', PW = '[PASSPHRASE]', PROXY = '192.168.49.1:8080';
+let dfs = false;
+
+function derive(s) {
+  const p = s.phase, on = p !== 'idle', up = p === 'waiting' || p === 'live', live = p === 'live';
+  const health = [
+    { key: 'router', ...(dfs && on ? { tone: 'warn', label: 'Router on DFS channel 64', detail: 'Set 5 GHz to channel 36–48, 40 MHz' }
+      : on ? { tone: 'ok', label: 'Router channel', detail: 'Channel 36 · 40 MHz' }
+      : { tone: 'wait', label: 'Router channel', detail: 'Checked when you start' }) },
+    { key: 'ps5', ...(up ? { tone: 'ok', label: 'PS5', detail: '[PS5 name] · home Wi-Fi' }
+      : on ? { tone: 'busy', label: 'PS5', detail: 'Searching the home network…' }
+      : { tone: 'wait', label: 'PS5', detail: 'Found automatically' }) },
+    { key: 'portal', ...(live ? { tone: 'ok', label: 'Portal', detail: 'Connected' }
+      : up ? { tone: 'busy', label: 'Portal', detail: 'Start Remote Play on the Portal' }
+      : { tone: 'wait', label: 'Portal', detail: 'Not connected' }) },
+    { key: 'boost', ...(live ? { tone: 'ok', label: 'Boost', detail: 'Applied · profile ' + s.profile }
+      : { tone: 'wait', label: 'Boost', detail: 'Applied when Remote Play starts' }) },
+  ];
+  const log = [on ? ['Wi-Fi Direct up · ' + SSID + ' · ch 36'] : ['Ready. Tap Start to begin.']];
+  if (on) log.push(['HTTP proxy on ' + PROXY]);
+  if (on && dfs) log.push(['WARNING router on DFS ch 64', 'bad']);
+  if (up) log.push(['PS5 found · [PS5 name]']);
+  if (live) log.push(['Portal joined'], ['PATCHED startup packet · profile ' + s.profile, 'good'], ['relay ' + s.mbps + ' Mbps · ' + (s.h1 + s.h2) + ' ms']);
+  return {
+    s, p, on, up, live, health, log, ms: s.h1 + s.h2,
+    status: dfs && on ? 'Router channel needs attention' : { idle: 'Ready when you are', starting: 'Creating the Portal network…', waiting: 'Waiting for the Portal to connect', live: 'Boosting · profile ' + s.profile }[p],
+    chip: { idle: 'Off', starting: 'Starting', waiting: 'Waiting', live: 'Live' }[p],
+    chipTone: dfs && on ? 'warn' : live ? 'ok' : on ? 'on' : '',
+  };
+}
+
+/* ================= Refined ================= */
+const TILE = { router: ['#00A39A', ICON.wifi()], ps5: ['#0070D1', ICON.pad()], portal: ['#E5A800', ICON.handheld()], boost: ['#E4002B', ICON.bolt()] };
+const RING_C = 2 * Math.PI * 108;
+
+function rTrail(h) {
+  if (h.tone === 'ok') return `<span class="r-trail" style="color:var(--green)" aria-label="OK">${ICON.ok}</span>`;
+  if (h.tone === 'warn') return `<span class="r-trail" style="color:var(--orange)" aria-label="Needs attention">${ICON.warn}</span>`;
+  if (h.tone === 'busy') return `<span class="r-trail" aria-label="In progress"><span class="r-spin"></span></span>`;
+  return `<span class="r-trail" aria-label="Waiting">–</span>`;
+}
+function rCopyTrail(s, key) {
+  return s.copied === key ? '<span class="r-ok">Copied</span>' : `<span class="r-trail tint">${ICON.copy}</span>`;
+}
+const rCopyRow = (s, key, label, value) => `<button class="r-row r-btn" data-act="copy" data-v="${key}"><div class="r-body"><div class="r-txt"><span class="r-d">${label}</span><span class="r-l r-mono">${value}</span></div>${rCopyTrail(s, key)}</div></button>`;
+
+function rHome(d) {
+  const s = d.s, idx = [45, 55, 65, 100].indexOf(s.profile);
+  const arcLen = d.live ? (Math.min(100, s.mbps) / 100) * RING_C : d.on ? 150 : 0;
+  const center = d.live
+    ? `<span class="r-big">${s.mbps}</span><span class="r-unit">Mbps</span>`
+    : d.on ? `<span class="r-cta" style="margin:0">${d.p === 'starting' ? 'Starting' : 'Waiting'}</span><span class="r-unit">Tap to cancel</span>`
+    : `<span style="color:var(--tint)">${ICON.powerThin}</span><span class="r-cta">Start</span>`;
+  const statusText = d.live ? `Boosting · ${d.ms} ms latency` : d.status;
+  return `
+  <div class="r-title"><img src="logo.svg" alt=""><h1>Portal Boost</h1></div>
+  <div class="r-hero">
+    <button class="r-ring ${d.on && !d.live ? 'spin' : ''}" data-act="toggle" aria-label="${d.on ? 'Stop boost' : 'Start boost'}">
+      <svg viewBox="0 0 240 240"><circle class="trk" cx="120" cy="120" r="108"/><circle class="arc" cx="120" cy="120" r="108" data-arc="${arcLen.toFixed(1)}" style="stroke-dasharray:${(this_prevArc ?? arcLen).toFixed(1)} 1000;${arcLen === 0 ? 'opacity:0' : ''}"/></svg>
+      <span class="r-disc">${center}</span>
+    </button>
+    <p class="r-status ${dfs && d.on ? 'warn' : ''}" role="status">${statusText}</p>
+  </div>
+
+  <section class="r-sec">
+    <h2 class="r-head">Quality</h2>
+    <div class="r-seg ${d.on ? 'locked' : ''}" role="radiogroup" aria-label="Quality profile">
+      <span class="r-thumb" data-idx="${idx}" style="transform:translateX(${(this_prevIdx ?? idx) * 100}%);${idx < 0 ? 'opacity:0' : ''}"></span>
+      ${[45, 55, 65, 100].map((v) => `<button role="radio" aria-checked="${s.profile === v}" data-act="profile" data-v="${v}" ${d.on ? 'disabled' : ''}>${v}</button>`).join('')}
+    </div>
+    ${d.on
+      ? `<p class="r-foot lock">${ICON.lock}<span>Stop boosting to change quality. The Portal keeps its old setting until a new session starts.</span></p>`
+      : `<p class="r-foot">${idx < 0 ? `Using profile ${s.profile === 0 ? 'Off' : s.profile} from Advanced. ` : s.profile === 65 ? 'Recommended. ' : ''}${NOTES[s.profile]}</p>`}
+  </section>
+
+  <section class="r-sec">
+    <h2 class="r-head">Connection</h2>
+    <div class="r-group">${d.health.map((h) => `<div class="r-row"><span class="r-tile" style="background:${TILE[h.key][0]}">${TILE[h.key][1]}</span><div class="r-body"><div class="r-txt"><span class="r-l">${h.label}</span><span class="r-d" ${h.tone === 'warn' ? 'style="color:var(--orange)"' : ''}>${h.detail}</span></div>${rTrail(h)}</div></div>`).join('')}</div>
+  </section>
+
+  <section class="r-sec">
+    <h2 class="r-head">Portal Wi-Fi</h2>
+    <div class="r-group">
+      ${rCopyRow(s, 'ssid', 'Network', SSID)}
+      <div class="r-row"><div class="r-body">
+        <button class="r-fill" data-act="copy" data-v="pw"><span class="r-txt"><span class="r-d">Password</span><span class="r-l r-mono">${s.showPw ? PW : '••••••••••••'}</span></span></button>
+        <button class="r-eye" data-act="pw" aria-label="${s.showPw ? 'Hide' : 'Show'} password">${s.showPw ? ICON.eyeOff : ICON.eye}</button>
+        <button data-act="copy" data-v="pw" aria-label="Copy password" tabindex="-1" style="align-self:stretch;display:flex;align-items:center">${rCopyTrail(s, 'pw')}</button>
+      </div></div>
+      ${rCopyRow(s, 'proxy', 'Proxy (manual)', '192.168.49.1 : 8080')}
+    </div>
+    <p class="r-foot">Tap a value to copy it. Enter these on the Portal under Wi-Fi › Enter Manually.</p>
+  </section>`;
+}
+
+const R_STEPS = [
+  { tile: ['#00A39A', ICON.wifi(34)], title: 'Join your home 5 GHz Wi-Fi', lead: 'Connect this phone to the same router as your PS5, on the 5 GHz band. Keep the PS5 wired to the router.',
+    body: () => `<div class="r-group"><div class="r-row"><div class="r-body"><div class="r-txt"><span class="r-l">Portal Boost creates a private network for the Portal on the same channel as your home Wi-Fi.</span></div></div></div></div>` },
+  { tile: ['#0070D1', ICON.dial(32)], title: 'Set a fixed router channel', lead: 'Open your router settings and set the 5 GHz band like this.',
+    body: () => `<div class="r-group">
+      <div class="r-row"><div class="r-body"><span class="r-l" style="flex:1">Channel</span><span class="r-v">36, 40, 44 or 48</span></div></div>
+      <div class="r-row"><div class="r-body"><span class="r-l" style="flex:1">Width</span><span class="r-v">40 MHz</span></div></div>
+      <div class="r-row"><div class="r-body"><span class="r-l" style="flex:1">Auto channel</span><span class="r-v">Off</span></div></div></div>
+      <p class="r-foot">On Auto, the router may pick a DFS channel such as 64. The Portal network can't use DFS channels, so it lands elsewhere and lag becomes unplayable.</p>` },
+  { tile: ['#E5A800', ICON.handheld(34)], title: 'Connect the Portal', lead: 'On the Portal, open Wi-Fi settings and choose Enter Manually.',
+    body: (s) => `<div class="r-group">
+      ${rCopyRow(s, 'ssid', 'SSID', SSID)}
+      <div class="r-row"><div class="r-body"><div class="r-txt"><span class="r-d">Security</span><span class="r-l r-mono">WPA2</span></div></div></div>
+      ${rCopyRow(s, 'pw', 'Password', PW)}
+      <div class="r-row"><div class="r-body"><div class="r-txt"><span class="r-d">Proxy</span><span class="r-l r-mono">Use</span></div></div></div>
+      ${rCopyRow(s, 'proxyip', 'Proxy address', '192.168.49.1')}
+      ${rCopyRow(s, 'port', 'Port', '8080')}</div>` },
+  { tile: ['#E4002B', ICON.bolt(34)], title: 'Make it automatic', lead: 'Optional. On the Portal, forget your home Wi-Fi so it always rejoins the boosted network.',
+    body: () => `<div class="r-group"><div class="r-row"><div class="r-body"><div class="r-txt"><span class="r-l">When Portal Boost is off, the Portal falls back to home Wi-Fi and plays at stock quality.</span></div></div></div></div>
+      <p class="r-foot">The Portal needs internet to start Remote Play. Portal Boost passes it through, so nothing else changes.</p>` },
+];
+
+function rSetup(d) {
+  const st = R_STEPS[d.s.step];
+  return `<div class="r-onb">
+    <div class="r-dots" aria-label="Step ${d.s.step + 1} of 4">${R_STEPS.map((_, i) => `<span class="${i === d.s.step ? 'on' : ''}"></span>`).join('')}</div>
+    <div class="r-bigtile" style="background:${st.tile[0]}">${st.tile[1]}</div>
+    <h2>${st.title}</h2>
+    <p class="lead">${st.lead}</p>
+    <div style="width:100%">${st.body(d.s)}</div>
+    <button class="r-primary" data-act="next">${d.s.step === 3 ? 'Done' : 'Continue'}</button>
+    <button class="r-secondary" data-act="back" ${d.s.step === 0 ? 'disabled' : ''}>Back</button>
+  </div>`;
+}
+
+function rAdvanced(d) {
+  const s = d.s;
+  return `<div class="r-title" style="padding-top:28px"><h1>Advanced</h1></div>
+  <section class="r-sec" style="margin-top:16px">
+    <h2 class="r-head">Latency</h2>
+    <div class="r-group">
+      <div class="r-row"><div class="r-body"><span class="r-l" style="flex:1">Portal → phone</span><span class="r-v">${d.live ? s.h1 + ' ms' : '–'}</span></div></div>
+      <div class="r-row"><div class="r-body"><span class="r-l" style="flex:1">Phone → PS5</span><span class="r-v">${d.live ? s.h2 + ' ms' : '–'}</span></div></div>
+    </div>
+    <p class="r-foot">The picture makes two Wi-Fi hops through the phone, which adds about 4–7 ms.</p>
+  </section>
+  <section class="r-sec">
+    <h2 class="r-head">More profiles</h2>
+    <div class="r-group">${[[35, '35', 'Lighter'], [200, '200', 'Experimental'], [0, 'Off', 'Stock quality']].map(([v, l, t]) => `<button class="r-row r-btn" data-act="profile" data-v="${v}" role="radio" aria-checked="${s.profile === v}" ${d.on ? 'disabled' : ''}><div class="r-body"><div class="r-txt"><span class="r-l">${l}</span><span class="r-d">${t}</span></div>${s.profile === v ? `<span class="r-check">${ICON.checkmark}</span>` : ''}</div></button>`).join('')}</div>
+    <p class="r-foot">${d.on ? 'Stop boosting to change quality.' : 'Choosing one of these replaces the quality on the Boost tab.'}</p>
+  </section>
+  <section class="r-sec">
+    <h2 class="r-head">Log</h2>
+    <div class="r-group">
+      <div class="r-log">${d.log.map(([t, c]) => `<div class="${c || ''}">${t}</div>`).join('')}</div>
+      <button class="r-row r-btn" data-act="copy" data-v="log"><div class="r-body"><span class="r-l r-action" style="flex:1">${s.copied === 'log' ? 'Copied' : 'Copy Log'}</span></div></button>
+    </div>
+  </section>
+  <p class="r-ver">Portal Boost 0.13</p>`;
+}
+
+let this_prevArc = null, this_prevIdx = null;
+function renderR(d, theme, prev) {
+  this_prevArc = prev.arc; this_prevIdx = prev.idx;
+  const s = d.s;
+  const body = s.tab === 'home' ? rHome(d) : s.tab === 'setup' ? `<div class="r-title" style="padding:4px 0 0"></div>${rSetup(d)}` : rAdvanced(d);
+  const tabs = [['home', 'Boost', ICON.bolt(24)], ['setup', 'Setup', ICON.list], ['adv', 'Advanced', ICON.sliders]];
+  return `<div class="opt-r ${theme}"><main class="r-main" data-scroll>${body}</main>
+    <nav class="r-tabbar" aria-label="Sections">${tabs.map(([t, l, ic]) => `<button data-act="tab" data-v="${t}" ${s.tab === t ? 'aria-current="page"' : ''}>${ic}${l}</button>`).join('')}</nav></div>`;
+}
+
+/* ================= Original A ================= */
+const hdr = (d) => `<header class="hdr"><img src="logo.svg" alt=""><span class="name">Portal Boost</span><span class="chip"><span class="dot ${d.chipTone}"></span>${d.chip}</span></header>`;
+const lockNote = (d) => d.on ? `<div class="lock">${ICON.lock}<span>Stop to change quality. The Portal keeps the old setting until it starts a new session.</span></div>` : '';
+const segQuality = (d) => `<section class="card"><h2 class="eyebrow">Quality</h2>
+  <div class="seg" role="radiogroup" aria-label="Quality profile">${[45, 55, 65, 100].map((v) => `<button role="radio" aria-checked="${d.s.profile === v}" data-act="profile" data-v="${v}" ${d.on ? 'disabled' : ''}>${v}</button>`).join('')}</div>
+  <p class="pnote">${d.s.profile === 65 ? '<b>Recommended.</b> ' : ''}${NOTES[d.s.profile]}</p>${lockNote(d)}</section>`;
+const creds = (d) => `<section class="card"><h2 class="eyebrow">Portal Wi-Fi · tap to copy</h2>
+  <button class="cred" data-act="copy" data-v="ssid"><span><span class="k">Network</span><span class="mono">${SSID}</span></span>${ICON.copy}</button>
+  <div class="credline"><button class="cred" data-act="copy" data-v="pw"><span><span class="k">Password</span><span class="mono">${d.s.showPw ? PW : '••••••••••••'}</span></span>${ICON.copy}</button><button class="iconbtn" data-act="pw" aria-label="${d.s.showPw ? 'Hide' : 'Show'} password">${ICON.eye}</button></div>
+  <button class="cred" data-act="copy" data-v="proxy"><span><span class="k">Proxy · manual</span><span class="mono">192.168.49.1 : 8080</span></span>${ICON.copy}</button></section>`;
+const healthList = (d) => `<section class="card health" aria-label="Connection checks">${d.health.map((h) => `<div class="hrow"><span class="hdot ${h.tone}"></span><div><b class="${h.tone === 'warn' ? 'warn-t' : ''}">${h.label}</b><small>${h.detail}</small></div></div>`).join('')}</section>`;
+const STEPS = [
+  () => `<h1 class="sh1">Join your home 5 GHz Wi-Fi</h1><p class="sbody">Connect this phone to the same router as your PS5, on the 5 GHz band. The PS5 should be wired to the router.</p>`,
+  () => `<h1 class="sh1">Fix your router channel</h1><div class="pair"><div class="card"><div class="muted" style="font-size:12px">Channel</div><div class="v">36–48</div></div><div class="card"><div class="muted" style="font-size:12px">Width</div><div class="v">40 MHz</div></div></div><div class="warnbox"><b>Not Auto.</b> On Auto the router may pick DFS channel 64, and lag becomes unplayable.</div>`,
+  () => `<h1 class="sh1">Connect the Portal</h1><div class="card" style="padding-block:4px"><button class="kv" data-act="copy" data-v="ssid"><span class="k">SSID</span><span class="mono">${SSID}</span></button><div class="kv"><span class="k">Security</span><span class="mono">WPA2</span></div><button class="kv" data-act="copy" data-v="pw"><span class="k">Password</span><span class="mono">${PW}</span></button><button class="kv" data-act="copy" data-v="proxy"><span class="k">Proxy</span><span class="mono">${PROXY}</span></button></div>`,
+  () => `<h1 class="sh1">Optional: forget home Wi-Fi on the Portal</h1><p class="sbody">Then the Portal always rejoins the boosted network.</p>`,
+];
+const aSetup = (d) => `<div class="steps" aria-hidden="true">${STEPS.map((_, i) => `<span class="${i <= d.s.step ? 'on' : ''}"></span>`).join('')}</div><div class="stepno">Step ${d.s.step + 1} of 4</div>${STEPS[d.s.step](d)}<div class="navrow"><button class="btn ghost" data-act="back" ${d.s.step === 0 ? 'disabled' : ''}>Back</button><button class="btn primary" data-act="next">${d.s.step === 3 ? 'Done' : 'Next'}</button></div>`;
+const aAdvanced = (d) => `<h1 class="sh1" style="font-size:22px">Advanced</h1><section class="card"><h2 class="eyebrow">Log</h2><div class="log">${d.log.map(([t, c]) => `<div class="${c || ''}">${t}</div>`).join('')}</div></section>`;
+function renderA(d) {
+  const s = d.s;
+  let body;
+  if (s.tab === 'home') {
+    body = `<section class="a-hero"><button class="a-power ${d.live ? 'is-live' : d.on ? 'is-on' : ''}" data-act="toggle" aria-label="${d.on ? 'Stop boost' : 'Start boost'}">${d.live ? `<span class="big num">${s.mbps}</span><span class="sub">Mbps · tap to stop</span>` : `${ICON.power}<span class="lbl">${d.p === 'idle' ? 'Start' : d.p === 'starting' ? 'Starting…' : 'Waiting…'}</span>`}</button><p class="a-status" role="status">${d.status}</p></section>
+      <section class="a-tiles"><div class="card"><div class="muted" style="font-size:12px;font-weight:600">Bitrate</div><div class="v num">${d.live ? s.mbps : '—'}<span> Mbps</span></div><small>Stock ≈ 20</small></div><div class="card"><div class="muted" style="font-size:12px;font-weight:600">Latency</div><div class="v num">${d.live ? d.ms : '—'}<span> ms</span></div><small>${d.live ? `Portal ${s.h1} · PS5 ${s.h2}` : 'Two hops via phone'}</small></div></section>
+      ${healthList(d)}${segQuality(d)}${creds(d)}`;
+  } else body = s.tab === 'setup' ? aSetup(d) : aAdvanced(d);
+  const tb = `<nav class="tabbar" aria-label="Sections">${[['home', 'Boost', ICON.home], ['setup', 'Setup', ICON.list], ['adv', 'Advanced', ICON.sliders]].map(([t, l, ic]) => `<button data-act="tab" data-v="${t}" ${s.tab === t ? 'aria-current="page"' : ''}>${ic}${l}</button>`).join('')}</nav>`;
+  return `<div class="screen opt-a">${hdr(d)}<main class="main" data-scroll>${body}</main>${tb}${s.toast ? `<div class="toast" role="status">${s.toast}</div>` : ''}</div>`;
+}
+
+/* ================= phone instance ================= */
+let phoneTheme = 'dark';
+class Phone {
+  constructor(el, opt, theme) {
+    this.el = el; this.opt = opt; this.theme = theme; this.timers = []; this.prev = { arc: null, idx: null };
+    this.s = { tab: 'home', phase: 'idle', profile: 65, step: 0, showPw: false, toast: '', copied: '', mbps: 54, h1: 5, h2: 4 };
+    el.addEventListener('click', (e) => this.onClick(e));
+    this.iv = setInterval(() => {
+      if (this.s.phase !== 'live') return;
+      const r = (a, b) => a + Math.round(Math.random() * (b - a));
+      this.set({ mbps: r(47, 60), h1: r(4, 6), h2: r(4, 5) });
+    }, 1000);
+    this.render();
+  }
+  destroy() { clearInterval(this.iv); clearTimeout(this.tt); this.timers.forEach(clearTimeout); }
+  set(p) { Object.assign(this.s, p); this.render(); }
+  toggle() {
+    this.timers.forEach(clearTimeout); this.timers = [];
+    if (this.s.phase === 'idle') {
+      this.set({ phase: 'starting' });
+      this.timers.push(setTimeout(() => this.set({ phase: 'waiting' }), 1500));
+      this.timers.push(setTimeout(() => this.set({ phase: 'live' }), 4000));
+    } else this.set({ phase: 'idle' });
+  }
+  flash(p) { clearTimeout(this.tt); this.set(p); this.tt = setTimeout(() => this.set({ toast: '', copied: '' }), 1500); }
+  copy(key) {
+    const d = derive(this.s);
+    const val = { ssid: SSID, pw: PW, proxy: PROXY, proxyip: '192.168.49.1', port: '8080', log: d.log.map((l) => l[0]).join('\n') }[key];
+    const done = () => this.flash({ copied: key, toast: 'Copied' });
+    try { navigator.clipboard.writeText(val).then(done, done); } catch (e) { done(); }
+  }
+  onClick(e) {
+    const b = e.target.closest('[data-act]');
+    if (!b || b.disabled) return;
+    const v = b.dataset.v;
+    switch (b.dataset.act) {
+      case 'toggle': return this.toggle();
+      case 'tab': return this.set({ tab: v });
+      case 'profile': return this.set({ profile: +v });
+      case 'pw': return this.set({ showPw: !this.s.showPw });
+      case 'copy': return this.copy(v);
+      case 'back': return this.set({ step: Math.max(0, this.s.step - 1) });
+      case 'next': return this.s.step === 3 ? this.set({ tab: 'home', step: 0 }) : this.set({ step: this.s.step + 1 });
+    }
+  }
+  render() {
+    const main = this.el.querySelector('[data-scroll]');
+    const top = main ? main.scrollTop : 0;
+    const a = document.activeElement;
+    const focusKey = this.el.contains(a) && a.dataset && a.dataset.act ? a.dataset.act + '|' + (a.dataset.v || '') : null;
+    const d = derive(this.s);
+    this.el.innerHTML = this.opt === 'r' ? renderR(d, this.theme || phoneTheme, this.prev) : renderA(d);
+    const m2 = this.el.querySelector('[data-scroll]');
+    if (m2 && this.lastTab === this.s.tab) m2.scrollTop = top;
+    this.lastTab = this.s.tab;
+    // animate ring + segmented thumb from their previous positions
+    const arc = this.el.querySelector('[data-arc]'), thumb = this.el.querySelector('[data-idx]');
+    requestAnimationFrame(() => {
+      if (arc) { arc.style.strokeDasharray = arc.dataset.arc + ' 1000'; }
+      if (thumb && +thumb.dataset.idx >= 0) thumb.style.transform = `translateX(${+thumb.dataset.idx * 100}%)`;
+    });
+    if (arc) this.prev.arc = +arc.dataset.arc;
+    if (thumb && +thumb.dataset.idx >= 0) this.prev.idx = +thumb.dataset.idx;
+    if (focusKey) {
+      const [act, v] = focusKey.split('|');
+      const el = [...this.el.querySelectorAll('[data-act]')].find((x) => x.dataset.act === act && (x.dataset.v || '') === v);
+      if (el) el.focus({ preventScroll: true });
+    }
+  }
+}
+
+/* ================= page controller ================= */
+const stage = document.getElementById('stage');
+let phones = [], view = 'one', opt = 'r';
+try { opt = localStorage.getItem('pb2-opt') || 'r'; view = localStorage.getItem('pb2-view') || 'one'; phoneTheme = localStorage.getItem('pb2-theme') || 'dark'; } catch (e) {}
+
+function device(o, theme) {
+  const dev = document.createElement('div'); dev.className = 'device';
+  const slot = document.createElement('div'); slot.className = 'slot'; dev.appendChild(slot);
+  phones.push(new Phone(slot, o, theme));
+  return dev;
+}
+function fit() {
+  document.querySelectorAll('.fit').forEach((f) => {
+    const dev = f.firstElementChild, k = Math.min(1, f.clientWidth / 380);
+    dev.style.transform = k < 1 ? `scale(${k})` : ''; f.style.height = 800 * k + 'px';
+  });
+}
+function mount() {
+  phones.forEach((p) => p.destroy()); phones = []; stage.innerHTML = '';
+  if (view === 'one') {
+    const f = document.createElement('div'); f.className = 'fit'; f.appendChild(device(opt, null)); stage.appendChild(f);
+  } else {
+    const c = document.createElement('div'); c.className = 'compare';
+    [['r', 'dark', 'Refined · dark'], ['r', 'light', 'Refined · light'], ['a', null, 'Original']].forEach(([o, t, name]) => {
+      const fig = document.createElement('figure'); fig.appendChild(device(o, t));
+      const cap = document.createElement('figcaption'); cap.textContent = name; fig.appendChild(cap); c.appendChild(fig);
+    });
+    stage.appendChild(c);
+  }
+  document.querySelectorAll('[data-opt]').forEach((b) => { b.setAttribute('aria-pressed', b.dataset.opt === opt && view === 'one'); b.disabled = view !== 'one'; });
+  document.querySelectorAll('[data-view]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.view === view));
+  document.querySelectorAll('[data-theme-set]').forEach((b) => { b.setAttribute('aria-pressed', b.dataset.themeSet === phoneTheme); b.disabled = view !== 'one' || opt !== 'r'; });
+  document.querySelector('.layout').style.flexDirection = view === 'one' ? '' : 'column-reverse';
+  document.querySelector('.rail').style.maxWidth = view === 'one' ? '' : 'none';
+  fit();
+}
+document.getElementById('choices').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-opt]'); if (!b || b.disabled) return;
+  opt = b.dataset.opt; try { localStorage.setItem('pb2-opt', opt); } catch (er) {} mount();
+});
+document.querySelectorAll('[data-view]').forEach((b) => b.addEventListener('click', () => { view = b.dataset.view; try { localStorage.setItem('pb2-view', view); } catch (er) {} mount(); }));
+document.querySelectorAll('[data-theme-set]').forEach((b) => b.addEventListener('click', () => {
+  phoneTheme = b.dataset.themeSet; try { localStorage.setItem('pb2-theme', phoneTheme); } catch (er) {}
+  document.querySelectorAll('[data-theme-set]').forEach((x) => x.setAttribute('aria-pressed', x.dataset.themeSet === phoneTheme));
+  phones.forEach((p) => p.render());
+}));
+document.getElementById('dfs').addEventListener('change', (e) => { dfs = e.target.checked; phones.forEach((p) => p.render()); });
+document.getElementById('firstrun').addEventListener('click', () => phones.forEach((p) => p.set({ tab: 'setup', step: 0 })));
+document.getElementById('reset').addEventListener('click', () => mount());
+window.addEventListener('resize', fit);
+mount();
+</script>
