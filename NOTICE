@@ -1,0 +1,39 @@
+Portal Boost
+Copyright (c) 2026 Talgold3. Licensed under the MIT License (see LICENSE).
+
+This project includes logic derived from ps5-portal-high-bitrate
+(https://github.com/atameric/ps5-portal-high-bitrate): the LaunchSpec
+bitrate patch (offset and XOR values) used in android/app/src/main/java/
+dev/portalboost/Patch.kt and portal_proxy.py. That project is licensed as
+follows:
+
+-------------------------------------------------------------------------------
+MIT License
+
+Copyright (c) 2026 atameric
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-------------------------------------------------------------------------------
+
+Protocol background (port numbers, Takion packet layout) comes from public
+documentation of chiaki-ng (https://github.com/streetpea/chiaki-ng). No
+chiaki-ng source code is included.
+
+PlayStation, PS5 and PlayStation Portal are trademarks of Sony Interactive
+Entertainment Inc. This project is not affiliated with or endorsed by Sony.
