@@ -6,6 +6,12 @@ The Portal asks the PS5 for a stream of about 25 Mbps, and in practice gets abou
 
 No root, no jailbreak, no changes to the Portal or PS5 firmware. It's a normal Android app.
 
+<p align="center">
+  <img src="docs/screenshots/start.jpg" width="240" alt="Main screen with the Start button and quality choice">
+  <img src="docs/screenshots/running.jpg" width="240" alt="Running, with router channel and PS5 checks passed">
+  <img src="docs/screenshots/setup.jpg" width="240" alt="Setup guide: router channel settings">
+</p>
+
 > Independent community project. Not affiliated with or endorsed by Sony. Use at your own risk.
 
 ## Results
