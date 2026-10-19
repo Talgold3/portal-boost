@@ -107,7 +107,7 @@ Open an [issue](../../issues) and include:
 
 [`portal_proxy.py`](portal_proxy.py) is the original proof of concept for Windows, macOS or Linux. It needs Python 3 and a machine the Portal can reach:
 
-```
+```sh
 python3 portal_proxy.py --ps5 <PS5_IP> --profile 65
 ```
 
@@ -117,7 +117,7 @@ The Android app is the maintained version.
 
 Requires JDK 17 and the Android SDK (platform 34).
 
-```
+```sh
 cd android
 ./gradlew testDebugUnitTest assembleDebug
 ```
